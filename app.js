@@ -1,4 +1,4 @@
-// Configuração Firebase
+// Config Firebase
 const firebaseConfig = {
     databaseURL: "https://controle-de-equipamentos-1776d-default-rtdb.firebaseio.com/"
 };
@@ -43,24 +43,21 @@ const equipamentos = [
 // Login
 let currentUser = "";
 let isAdmin = false;
+
 function login() {
     const name = document.getElementById("userName").value.trim();
     const pass = document.getElementById("adminPass").value.trim();
-
-    if(name === "") { alert("Digite seu nome"); return; }
-
-    if(pass === "Klig") { // Admin
-        if(name !== "Gilberlen") { alert("Nome incorreto para admin"); return; }
+    if (!name) { alert("Digite seu nome"); return; }
+    if (pass === "Klig") {
+        if (name !== "Gilberlen") { alert("Nome incorreto para admin"); return; }
         isAdmin = true;
     }
-
     currentUser = name;
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("mainPage").style.display = "block";
     loadEquipamentos();
 }
 
-// Logout
 function logout() {
     currentUser = "";
     isAdmin = false;
@@ -76,7 +73,7 @@ function loadEquipamentos() {
     listDiv.innerHTML = "";
     db.ref("equipamentos").once("value").then(snapshot => {
         let data = snapshot.val();
-        if(!data) { // Se banco vazio, inicializa
+        if (!data) {
             equipamentos.forEach(e => {
                 db.ref("equipamentos/"+e.id).set({
                     name: e.name,
@@ -100,13 +97,16 @@ function loadEquipamentos() {
             });
         }
 
-        for(const id in data) {
+        for (const id in data) {
             const eq = data[id];
             const div = document.createElement("div");
             div.className = "equipItem";
             div.innerHTML = `
-                <span>${eq.name} (${eq.available}/${eq.quantity})</span>
-                <div>
+                <div class="equipInfo">
+                    <span>${eq.name}</span>
+                    <small>${eq.available} / ${eq.quantity} disponível(s)</small>
+                </div>
+                <div class="equipButtons">
                     <button onclick='retirar(${id})' ${eq.available===0?"disabled":""}>Retirar</button>
                     ${isAdmin?`<button onclick='devolver(${id})'>Devolver</button>`:""}
                 </div>
@@ -118,22 +118,20 @@ function loadEquipamentos() {
 
 // Retirar equipamento
 function retirar(id) {
-    db.ref("equipamentos/"+id).once("value").then(snapshot => {
-        const eq = snapshot.val();
-        if(eq.available>0) {
-            const now = new Date();
-            const deadline = new Date();
-            deadline.setDate(now.getDate()+2);
+    const now = new Date();
+    const borrowDate = now.toLocaleString();
+    const deadline = new Date(now.getTime() + 2*24*60*60*1000).toLocaleString();
+    db.ref("equipamentos/"+id).once("value").then(snap => {
+        const eq = snap.val();
+        if(eq.available > 0) {
             db.ref("equipamentos/"+id).update({
                 available: eq.available-1,
-                status: eq.available-1===0?"bloqueado":"available",
                 responsible: currentUser,
-                borrowDate: now.toISOString(),
-                deadline: deadline.toISOString()
+                borrowDate: borrowDate,
+                deadline: deadline,
+                status: eq.available-1===0?"unavailable":"available"
             });
-            // Mensagem WhatsApp
-            const msg = encodeURIComponent(`Equipamento retirado:\n${eq.name}\nPor: ${currentUser}\nData/Hora: ${now.toLocaleString()}`);
-            window.open(`https://wa.me/5585985691148?text=${msg}`, '_blank');
+            window.open(`https://api.whatsapp.com/send?phone=5585985691148&text=${currentUser} retirou ${eq.name} em ${borrowDate}, devolução até ${deadline}`);
             loadEquipamentos();
         }
     });
@@ -141,21 +139,18 @@ function retirar(id) {
 
 // Devolver equipamento
 function devolver(id) {
-    db.ref("equipamentos/"+id).once("value").then(snapshot => {
-        const eq = snapshot.val();
-        if(eq.responsible===currentUser || isAdmin) {
+    db.ref("equipamentos/"+id).once("value").then(snap => {
+        const eq = snap.val();
+        if(eq.available < eq.quantity) {
             db.ref("equipamentos/"+id).update({
                 available: eq.available+1,
-                status: "available",
                 responsible: "",
                 borrowDate: "",
-                deadline: ""
+                deadline: "",
+                status: "available"
             });
-            const msg = encodeURIComponent(`Equipamento devolvido:\n${eq.name}\nPor: ${currentUser}\nData/Hora: ${new Date().toLocaleString()}`);
-            window.open(`https://wa.me/5585985691148?text=${msg}`, '_blank');
+            window.open(`https://api.whatsapp.com/send?phone=5585985691148&text=${currentUser} devolveu ${eq.name}`);
             loadEquipamentos();
-        } else {
-            alert("Você não pode devolver este equipamento.");
         }
     });
 }
