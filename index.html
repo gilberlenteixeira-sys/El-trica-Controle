@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Equipamentos</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="loginPage" class="page">
+    <h2>Login</h2>
+    <input type="text" id="userName" placeholder="Seu nome">
+    <input type="password" id="adminPass" placeholder="Senha do Admin (apenas para admin)">
+    <button onclick="login()">Entrar</button>
+</div>
+
+<div id="mainPage" class="page" style="display:none;">
+    <h2>Controle de Equipamentos</h2>
+    <div id="equipList"></div>
+    <button onclick="logout()">Sair</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
