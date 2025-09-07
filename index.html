@@ -5,23 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Controle de Equipamentos</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
-  <div id="login-container">
-    <h1>Login</h1>
+  <div class="login-screen">
+    <h2>Login</h2>
     <input type="text" id="username" placeholder="Digite seu nome">
-    <input type="password" id="admin-password" placeholder="Senha (apenas admin)">
-    <button id="login-btn">Entrar</button>
-    <p id="login-error" class="error"></p>
+    <input type="password" id="adminPass" placeholder="Senha do Admin" style="display:none">
+    <button id="loginBtn">Entrar</button>
+    <p id="loginError"></p>
   </div>
 
-  <div id="app-container" class="hidden">
-    <h1>Painel de Equipamentos</h1>
-    <div id="user-info"></div>
-    <div id="equipment-list"></div>
-    <button id="logout-btn">Sair</button>
+  <div class="main-screen" style="display:none">
+    <h2>Controle de Equipamentos</h2>
+    <p id="welcome"></p>
+    <table id="equipmentsTable">
+      <thead>
+        <tr>
+          <th>Equipamento</th>
+          <th>Disponível</th>
+          <th>Quantidade</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button id="logoutBtn">Sair</button>
   </div>
 
-  <script type="module" src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
