@@ -1,33 +1,38 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Controle de Equipamentos</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Controle de Equipamentos</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-<!-- LOGIN -->
-<div id="loginPage" class="page">
+  <div id="login-screen" class="screen">
     <h1>Controle de Equipamentos</h1>
-    <input type="text" id="userName" placeholder="Digite seu nome">
-    <input type="password" id="adminPass" placeholder="Senha do Admin (apenas admin)">
-    <button onclick="login()">Entrar</button>
-</div>
+    <button onclick="enterAsUser()">Entrar como Usuário</button>
+    <input type="text" id="admin-name" placeholder="Nome Admin" value="Gilberlen" />
+    <input type="password" id="admin-password" placeholder="Senha Admin" />
+    <button onclick="loginAsAdmin()">Entrar como Admin</button>
+    <p id="login-error" class="error"></p>
+  </div>
 
-<!-- PÁGINA PRINCIPAL -->
-<div id="mainPage" class="page" style="display:none;">
-    <header>
-        <h1>Equipamentos</h1>
-        <button class="logoutBtn" onclick="logout()">Sair</button>
-    </header>
-    <div id="equipList" class="equipList"></div>
-</div>
+  <div id="user-screen" class="screen hidden">
+    <h2>Bem-vindo, Usuário</h2>
+    <div id="equipment-list"></div>
+    <button onclick="logout()">Sair</button>
+  </div>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="app.js"></script>
+  <div id="admin-screen" class="screen hidden">
+    <h2>Bem-vindo, Admin (Gilberlen)</h2>
+    <div id="admin-equipment-list"></div>
+    <button onclick="logout()">Sair</button>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+
+  <!-- App -->
+  <script src="app.js"></script>
 </body>
 </html>

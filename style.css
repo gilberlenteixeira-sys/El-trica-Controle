@@ -1,92 +1,80 @@
+/* Tema: azul escuro, azul claro e laranja */
 body {
-    font-family: 'Arial', sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #f4f4f4;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f7fb;
+  color: #1a1a1a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
-/* Página */
-.page {
-    max-width: 480px;
-    margin: 30px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+.screen {
+  width: 95%;
+  max-width: 420px;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  text-align: center;
 }
 
-/* Cabeçalho */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
+.hidden {
+  display: none;
 }
 
-h1 {
-    color: #ff6600; /* laranja */
-    font-size: 24px;
+h1, h2 {
+  color: #003366;
 }
 
-/* Inputs */
-input {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-/* Botões */
 button {
-    padding: 10px;
-    width: 100%;
-    border: none;
-    background: #003366; /* azul escuro */
-    color: white;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 5px;
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ff8c00, #ffa733);
+  color: white;
+  transition: transform 0.2s ease;
 }
 
 button:hover {
-    background: #0066cc; /* azul claro */
+  transform: scale(1.05);
 }
 
-.logoutBtn {
-    width: auto;
-    padding: 5px 15px;
-    font-size: 14px;
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
 }
 
-/* Lista de equipamentos */
-.equipList {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+.equipment {
+  background: #e6f2ff;
+  border: 1px solid #003366;
+  border-radius: 10px;
+  padding: 12px;
+  margin: 8px 0;
+  text-align: left;
 }
 
-/* Cartão de equipamento */
-.equipItem {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    background: #fafafa;
+.equipment h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #003366;
 }
 
-.equipInfo {
-    display: flex;
-    flex-direction: column;
+.equipment p {
+  margin: 4px 0;
 }
 
-.equipInfo span {
-    font-weight: bold;
+.error {
+  color: red;
+  font-size: 14px;
 }
 
-.equipButtons button {
-    margin-left: 5px;
-}
