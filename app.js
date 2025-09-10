@@ -13,7 +13,7 @@ const reportArea = document.getElementById("report");
 let currentUser = "";
 let isAdmin = false;
 
-// Lista de equipamentos
+// Lista de equipamentos (mesma que você forneceu)
 const equipmentData = [
   { name: "ABB EKIP T&P", quantity: 1, available: 1, responsible: "", borrowDate: "", deadline: "" },
   { name: "Analisador de Energia Fluke 437-II", quantity: 1, available: 1, responsible: "", borrowDate: "", deadline: "" },
@@ -48,32 +48,35 @@ const equipmentData = [
   { name: "Detector de Tensão de Contato 1Kv-800KV", quantity: 2, available: 2, responsible: "", borrowDate: "", deadline: "" }
 ];
 
-// Inicializa Firebase se ainda não houver dados
 const equipmentRef = ref(database, "equipamentos");
+
+// Inicializa Firebase caso esteja vazio
 get(equipmentRef).then(snapshot => {
-  if (!snapshot.exists()) {
-    set(equipmentRef, equipmentData);
-  }
+  if (!snapshot.exists()) set(equipmentRef, equipmentData);
 });
 
-// LOGIN
+// Mostra login inicialmente
 loginSection.style.display = "block";
+
+// LOGIN
 loginBtn.addEventListener("click", () => {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
-  if (username === "") {
-    alert("Digite seu nome!");
-    return;
-  }
+
+  if (!username) { alert("Digite seu nome!"); return; }
 
   if (username === "Gilberlen" && password === "Klig") {
     isAdmin = true;
   } else {
     isAdmin = false;
   }
+
   currentUser = username;
+
+  // Avança para painel
   loginSection.style.display = "none";
   panelSection.style.display = "block";
+
   loadEquipment();
 });
 
@@ -88,36 +91,35 @@ logoutBtn.addEventListener("click", () => {
 // CARREGA EQUIPAMENTOS
 function loadEquipment() {
   get(equipmentRef).then(snapshot => {
-    if (snapshot.exists()) {
-      const equipments = snapshot.val();
-      equipmentList.innerHTML = "";
-      Object.keys(equipments).forEach(key => {
-        const eq = equipments[key];
-        const card = document.createElement("div");
-        card.className = "equipment-card";
-        if (eq.available === 0) card.classList.add("unavailable");
-        card.innerHTML = `
-          <div class="flex-row">
-            <strong>${eq.name}</strong>
-            <span>${eq.available}/${eq.quantity}</span>
-          </div>
-          <div class="flex-row">
-            <input type="date" id="borrowDate-${key}" value="${eq.borrowDate}">
-            <button id="borrowBtn-${key}">${eq.available > 0 ? "Retirar" : "Indisponível"}</button>
-            <button id="returnBtn-${key}">Devolver</button>
-          </div>
-        `;
-        equipmentList.appendChild(card);
+    if (!snapshot.exists()) return;
+    const equipments = snapshot.val();
+    equipmentList.innerHTML = "";
 
-        // EVENTOS DE BOTÕES
-        document.getElementById(`borrowBtn-${key}`).addEventListener("click", () => borrowEquipment(key, eq));
-        document.getElementById(`returnBtn-${key}`).addEventListener("click", () => returnEquipment(key, eq));
-      });
-    }
+    Object.keys(equipments).forEach(key => {
+      const eq = equipments[key];
+      const card = document.createElement("div");
+      card.className = "equipment-card";
+      if (eq.available === 0) card.classList.add("unavailable");
+      card.innerHTML = `
+        <div class="flex-row">
+          <strong>${eq.name}</strong>
+          <span>${eq.available}/${eq.quantity}</span>
+        </div>
+        <div class="flex-row">
+          <input type="date" id="borrowDate-${key}" value="${eq.borrowDate}">
+          <button id="borrowBtn-${key}">${eq.available>0?"Retirar":"Indisponível"}</button>
+          <button id="returnBtn-${key}">Devolver</button>
+        </div>
+      `;
+      equipmentList.appendChild(card);
+
+      document.getElementById(`borrowBtn-${key}`).addEventListener("click", () => borrowEquipment(key, eq));
+      document.getElementById(`returnBtn-${key}`).addEventListener("click", () => returnEquipment(key, eq));
+    });
   });
 }
 
-// RETIRAR EQUIPAMENTO
+// RETIRADA
 function borrowEquipment(key, eq) {
   if (eq.available === 0) { alert("Indisponível"); return; }
   const today = new Date().toISOString().split("T")[0];
@@ -131,12 +133,12 @@ function borrowEquipment(key, eq) {
   eq.deadline = deadlineStr;
 
   update(ref(database, `equipamentos/${key}`), eq);
-  alert(`Equipamento retirado com sucesso!\nPrazo: ${deadlineStr}`);
+  alert(`Equipamento retirado!\nPrazo: ${deadlineStr}`);
   sendWhatsAppNotification(eq, "retirada");
   loadEquipment();
 }
 
-// DEVOLVER EQUIPAMENTO
+// DEVOLUÇÃO
 function returnEquipment(key, eq) {
   if (eq.responsible !== currentUser && !isAdmin) { alert("Apenas quem retirou pode devolver!"); return; }
 
@@ -146,12 +148,12 @@ function returnEquipment(key, eq) {
   eq.deadline = "";
 
   update(ref(database, `equipamentos/${key}`), eq);
-  alert("Equipamento devolvido com sucesso!");
+  alert("Equipamento devolvido!");
   sendWhatsAppNotification(eq, "devolução");
   loadEquipment();
 }
 
-// NOTIFICAÇÃO VIA WHATSAPP
+// WHATSAPP
 function sendWhatsAppNotification(eq, action) {
   const adminNumber = "5585985691148";
   const msg = `Equipamento: ${eq.name}\nAção: ${action}\nUsuário: ${currentUser}`;
