@@ -1,35 +1,40 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Controle de Equipamentos</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Equipamentos</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>Controle de Equipamentos</h1>
-  </header>
-
-  <div class="container">
-    <!-- LOGIN -->
-    <div class="login-section" id="loginSection">
-      <h2>Login</h2>
-      <input type="text" id="username" placeholder="Seu nome">
-      <input type="password" id="password" placeholder="Senha (admin)">
-      <button id="loginBtn">Entrar</button>
+    <div id="login-container">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Digite seu nome">
+        <input type="password" id="adminPassword" placeholder="Senha do Admin (se for admin)">
+        <button id="loginBtn">Entrar</button>
+        <p id="loginError" class="error"></p>
     </div>
 
-    <!-- PAINEL -->
-    <div class="panel-section" id="panelSection">
-      <h2>Painel de Equipamentos</h2>
-      <div id="equipmentList"></div>
-      <button id="logoutBtn">Sair</button>
-      <button id="reportBtn">Gerar Relatório CSV</button>
-      <textarea id="report" readonly rows="6"></textarea>
+    <div id="dashboard-container" class="hidden">
+        <h2>Painel de Equipamentos</h2>
+        <div id="user-info">
+            <span id="welcomeUser"></span>
+            <button id="logoutBtn">Sair</button>
+        </div>
+        <table id="equipment-table">
+            <thead>
+                <tr>
+                    <th>Equipamento</th>
+                    <th>Disponível</th>
+                    <th>Quantidade Total</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button id="generateReport" class="hidden">Gerar Relatório CSV</button>
     </div>
-  </div>
 
-  <script type="module" src="app.js"></script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
