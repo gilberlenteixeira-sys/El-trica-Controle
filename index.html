@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,33 +7,29 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="login-screen">
-    <h2>Login</h2>
-    <input type="text" id="username" placeholder="Seu nome">
-    <input type="password" id="password" placeholder="Senha (apenas admin)">
-    <button id="loginBtn">Entrar</button>
-    <p id="loginError" class="error"></p>
+  <header>
+    <h1>Controle de Equipamentos</h1>
+  </header>
+
+  <div class="container">
+    <!-- LOGIN -->
+    <div class="login-section" id="loginSection">
+      <h2>Login</h2>
+      <input type="text" id="username" placeholder="Seu nome">
+      <input type="password" id="password" placeholder="Senha (admin)">
+      <button id="loginBtn">Entrar</button>
+    </div>
+
+    <!-- PAINEL -->
+    <div class="panel-section" id="panelSection">
+      <h2>Painel de Equipamentos</h2>
+      <div id="equipmentList"></div>
+      <button id="logoutBtn">Sair</button>
+      <button id="reportBtn">Gerar Relatório CSV</button>
+      <textarea id="report" readonly rows="6"></textarea>
+    </div>
   </div>
 
-  <div id="main-screen" style="display:none;">
-    <h2>Controle de Equipamentos</h2>
-    <p>Bem-vindo, <span id="userDisplay"></span></p>
-    <table id="equipments-table">
-      <thead>
-        <tr>
-          <th>Equipamento</th>
-          <th>Quantidade</th>
-          <th>Disponível</th>
-          <th>Status</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <button id="exportCSV" style="display:none;">Exportar CSV</button>
-    <button id="logoutBtn">Sair</button>
-  </div>
-
-  <script type="module" src="script.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
