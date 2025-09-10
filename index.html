@@ -1,40 +1,32 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Controle de Equipamentos</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
-  <div class="login-screen">
-    <h2>Login</h2>
-    <input type="text" id="username" placeholder="Digite seu nome">
-    <input type="password" id="adminPass" placeholder="Senha do Admin" style="display:none">
-    <button id="loginBtn">Entrar</button>
-    <p id="loginError"></p>
-  </div>
-
-  <div class="main-screen" style="display:none">
+  <!-- Tela de Login -->
+  <div id="login-screen" class="screen">
     <h2>Controle de Equipamentos</h2>
-    <p id="welcome"></p>
-    <table id="equipmentsTable">
-      <thead>
-        <tr>
-          <th>Equipamento</th>
-          <th>Disponível</th>
-          <th>Quantidade</th>
-          <th>Ação</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <button id="logoutBtn">Sair</button>
+    <input type="text" id="username" placeholder="Digite seu nome">
+    <input type="password" id="password" placeholder="Senha (somente admin)">
+    <button id="login-btn">Entrar</button>
   </div>
 
-  <script src="app.js"></script>
+  <!-- Tela Principal -->
+  <div id="main-screen" class="screen hidden">
+    <header>
+      <h2>📦 Equipamentos</h2>
+      <p id="welcome"></p>
+      <button id="logout-btn">Sair</button>
+    </header>
+
+    <div id="equipamentos-list"></div>
+  </div>
+
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>

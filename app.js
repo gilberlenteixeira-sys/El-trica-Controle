@@ -1,159 +1,144 @@
-// Configuração Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyBDJYHlnohrbJf0OXMz4GxJi6Okaxnqlv4",
-  authDomain: "controle-de-equipamentos-1776d.firebaseapp.com",
-  databaseURL: "https://controle-de-equipamentos-1776d-default-rtdb.firebaseio.com",
-  projectId: "controle-de-equipamentos-1776d",
-  storageBucket: "controle-de-equipamentos-1776d.appspot.com",
-  messagingSenderId: "479485491711",
-  appId: "1:479485491711:web:650ca173e97c24d10c0fca"
-};
+import { database } from "./firebase-config.js";
+import { ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+// DOM
+const loginScreen = document.getElementById("login-screen");
+const mainScreen = document.getElementById("main-screen");
+const loginBtn = document.getElementById("login-btn");
+const logoutBtn = document.getElementById("logout-btn");
+const usernameInput = document.getElementById("username");
+const passwordInput = document.getElementById("password");
+const welcomeMsg = document.getElementById("welcome");
+const equipamentosList = document.getElementById("equipamentos-list");
 
-// Admin
-const adminName = "Gilberlen";
-const adminPass = "Klig";
+// Variáveis
+let currentUser = "";
+const ADMIN_USER = "Gilberlen";
+const ADMIN_PASS = "Klig";
 
-// Equipamentos iniciais
-const equipments = [
-  { id:1, name:"ABB EKIP T&P", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:2, name:"Analisador de Energia Fluke 437-II", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:3, name:"Calibrador RTD Fluke 712B", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:4, name:"Câmera Termográfica Flir", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:5, name:"Certificador de Cabos Fluke", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:6, name:"Conprove CE-7012", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:7, name:"Detector de Alta Tensão 1Kv-800Kv", quantity:4, available:4, responsible:"", borrowDate:"", deadline:"" },
-  { id:8, name:"Detector de Cabos Amprobe AT-8000", quantity:2, available:2, responsible:"", borrowDate:"", deadline:"" },
-  { id:9, name:"Detector de Fase Fluke", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:10, name:"Detector Tensão de Contato 70Va-1Kv", quantity:2, available:2, responsible:"", borrowDate:"", deadline:"" },
-  { id:11, name:"Luximetro Fluke 941", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:12, name:"Mala de Ensaios Omicron", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:13, name:"Megger Fluke 5Kv", quantity:2, available:2, responsible:"", borrowDate:"", deadline:"" },
-  { id:14, name:"Megger Fluke 10Kv", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:15, name:"Microhmimetro Instrutemp Microhm 200", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:16, name:"Miliohmimetro Kocos Promet L100", quantity:2, available:2, responsible:"", borrowDate:"", deadline:"" },
-  { id:17, name:"Osciloscopio Fluke 190-502 scopmetter", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:18, name:"Tacometro Monarch PLT200", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:19, name:"Terrometro Fluke 1625", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:20, name:"Alta Temperatura infravermelho Fluke 572", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:21, name:"Analizador de Bateria BT 521 Fluke", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:22, name:"Detector de Tensão de Contato 3,8Kv-36Kv", quantity:2, available:2, responsible:"", borrowDate:"", deadline:"" },
-  { id:23, name:"Digital Ratiometer for Transformers DTR 8510 Fluke", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:24, name:"Interruptor a Vácuo Viddar Megger", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:25, name:"Medidor de irradiância Solar Fluke IRR2-BT", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:26, name:"Miliamperimetro", quantity:2, available:2, responsible:"", borrowDate:"", deadline:"" },
-  { id:27, name:"Osciloscopio Fluke 125B", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:28, name:"Trena a Laser Fluke", quantity:1, available:1, responsible:"", borrowDate:"", deadline:"" },
-  { id:29, name:"Detector de Tensão de Contato 180Kv-540Kv", quantity:2, available:2, responsible:"", borrowDate:"", deadline:"" },
-  { id:30, name:"Termômetro Infravermelho Fluke 62 MAX IR", quantity:2, available:2, responsible:"", borrowDate:"", deadline:"" },
-  { id:31, name:"Detector de Tensão de Contato 1Kv-800KV", quantity:2, available:2, responsible:"", borrowDate:"", deadline:"" }
-];
+// Função de login
+loginBtn.addEventListener("click", () => {
+  const username = usernameInput.value.trim();
+  const password = passwordInput.value.trim();
 
-// Inicializar DB se vazio
-db.ref('equipments').once('value', snapshot => {
-  if(!snapshot.exists()) {
-    db.ref('equipments').set(equipments);
-  }
-});
-
-// Login
-const loginBtn = document.getElementById('loginBtn');
-loginBtn.addEventListener('click', () => {
-  const username = document.getElementById('username').value.trim();
-  const passInput = document.getElementById('adminPass');
-  const mainScreen = document.querySelector('.main-screen');
-  const loginScreen = document.querySelector('.login-screen');
-  const loginError = document.getElementById('loginError');
-
-  if(username === "") { loginError.textContent="Digite seu nome!"; return; }
-
-  if(username === adminName) {
-    passInput.style.display="block";
-    const pass = passInput.value.trim();
-    if(pass !== adminPass) { loginError.textContent="Senha incorreta!"; return; }
+  if (!username) {
+    alert("Digite seu nome!");
+    return;
   }
 
-  loginScreen.style.display="none";
-  mainScreen.style.display="block";
-  document.getElementById('welcome').textContent = "Bem-vindo, " + username;
+  if (username === ADMIN_USER && password === ADMIN_PASS) {
+    currentUser = ADMIN_USER;
+    welcomeMsg.textContent = `👑 Admin: ${currentUser}`;
+  } else if (password === "") {
+    currentUser = username;
+    welcomeMsg.textContent = `👤 Usuário: ${currentUser}`;
+  } else {
+    alert("Senha incorreta!");
+    return;
+  }
 
-  loadEquipments();
+  loginScreen.classList.add("hidden");
+  mainScreen.classList.remove("hidden");
+
+  carregarEquipamentos();
 });
 
 // Logout
-document.getElementById('logoutBtn').addEventListener('click', () => {
+logoutBtn.addEventListener("click", () => {
   location.reload();
 });
 
 // Carregar equipamentos
-function loadEquipments() {
-  const tbody = document.querySelector('#equipmentsTable tbody');
-  tbody.innerHTML="";
-  db.ref('equipments').on('value', snapshot => {
-    snapshot.forEach(equipSnap => {
-      const eq = equipSnap.val();
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${eq.name}</td>
-        <td>${eq.available}</td>
-        <td>${eq.quantity}</td>
-        <td>
-          <button ${eq.available===0?'disabled':''} onclick="borrow('${eq.name}')">Retirar</button>
-          <button ${eq.available===eq.quantity?'disabled':''} onclick="returnEquipment('${eq.name}')">Devolver</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
+async function carregarEquipamentos() {
+  equipamentosList.innerHTML = "";
+  const dbRef = ref(database);
+  const snapshot = await get(child(dbRef, "equipamentos"));
+
+  if (snapshot.exists()) {
+    const data = snapshot.val();
+    Object.keys(data).forEach((id) => {
+      const equip = data[id];
+      renderEquipamento(id, equip);
     });
-  });
+  } else {
+    console.log("Nenhum equipamento encontrado.");
+  }
+}
+
+// Renderizar equipamento
+function renderEquipamento(id, equip) {
+  const card = document.createElement("div");
+  card.className = "equip-card";
+
+  card.innerHTML = `
+    <h3>${equip.name}</h3>
+    <p>Disponível: ${equip.available} / ${equip.quantity}</p>
+    <p>Status: ${equip.status}</p>
+    <p>Responsável: ${equip.responsavel || "-"}</p>
+    <p>Retirada: ${equip.retirada || "-"}</p>
+    <p>Prazo: ${equip.prazo || "-"}</p>
+    <p>Devolução: ${equip.devolucao || "-"}</p>
+  `;
+
+  const borrowBtn = document.createElement("button");
+  borrowBtn.textContent = "Retirar";
+  borrowBtn.className = "borrow-btn";
+  borrowBtn.disabled = equip.available <= 0;
+  borrowBtn.addEventListener("click", () => retirarEquipamento(id, equip));
+
+  const returnBtn = document.createElement("button");
+  returnBtn.textContent = "Devolver";
+  returnBtn.className = "return-btn";
+  returnBtn.disabled = equip.responsavel !== currentUser;
+  returnBtn.addEventListener("click", () => devolverEquipamento(id, equip));
+
+  card.appendChild(borrowBtn);
+  card.appendChild(returnBtn);
+
+  equipamentosList.appendChild(card);
 }
 
 // Retirar equipamento
-window.borrow = function(name) {
-  const username = document.getElementById('username').value.trim();
-  const now = new Date();
-  const borrowDate = now.toLocaleString();
-  const deadline = new Date(now.getTime() + 2*24*60*60*1000).toLocaleString(); // 2 dias
+async function retirarEquipamento(id, equip) {
+  if (equip.available <= 0) {
+    alert("Este item não está disponível!");
+    return;
+  }
 
-  db.ref('equipments').once('value', snapshot => {
-    snapshot.forEach(snap => {
-      let eq = snap.val();
-      if(eq.name === name && eq.available >0){
-        eq.available--;
-        eq.responsible = username;
-        eq.borrowDate = borrowDate;
-        eq.deadline = deadline;
-        db.ref('equipments/' + snap.key).set(eq);
-        alert(`${name} retirado com sucesso!`);
-        sendWhatsApp(`${username} retirou o equipamento ${name}`);
-      }
-    });
+  const now = new Date();
+  const retirada = now.toLocaleString();
+  const prazo = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000).toLocaleString();
+
+  await update(ref(database, "equipamentos/" + id), {
+    available: equip.available - 1,
+    status: equip.available - 1 === 0 ? "indisponível" : "disponível",
+    responsavel: currentUser,
+    retirada,
+    prazo,
+    devolucao: ""
   });
+
+  carregarEquipamentos();
 }
 
 // Devolver equipamento
-window.returnEquipment = function(name) {
-  const username = document.getElementById('username').value.trim();
-  db.ref('equipments').once('value', snapshot => {
-    snapshot.forEach(snap => {
-      let eq = snap.val();
-      if(eq.name === name && eq.responsible === username){
-        eq.available++;
-        if(eq.available===eq.quantity) eq.responsible="";
-        eq.borrowDate="";
-        eq.deadline="";
-        db.ref('equipments/' + snap.key).set(eq);
-        alert(`${name} devolvido com sucesso!`);
-        sendWhatsApp(`${username} devolveu o equipamento ${name}`);
-      }
-    });
+async function devolverEquipamento(id, equip) {
+  if (equip.responsavel !== currentUser) {
+    alert("Você não pode devolver este equipamento!");
+    return;
+  }
+
+  const devolucao = new Date().toLocaleString();
+
+  await update(ref(database, "equipamentos/" + id), {
+    available: equip.available + 1,
+    status: "disponível",
+    responsavel: "",
+    retirada: "",
+    prazo: "",
+    devolucao
   });
+
+  carregarEquipamentos();
 }
 
-// WhatsApp notification
-function sendWhatsApp(msg){
-  const phone = "5585985691148";
-  const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-  window.open(url, "_blank");
-}
